@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { serveStatic } from 'hono/deno'
 import { html, raw } from 'hono/html'
+import { HtmlEscapedString } from "hono/utils/html";
 
 const app = new Hono()
 const session = true;
@@ -81,9 +82,9 @@ const Layout = (props: SiteData) => html`
 
 app.use('/static/*', serveStatic({ root: './' }))
 
-const Content = (props: { siteData: SiteData; name: string }) => (
+const Content = async (props: { siteData: SiteData; name: string | Promise<HtmlEscapedString> }) => (
   <Layout {...props.siteData}>
-    {props.name}   
+    {props.name instanceof Promise ? await props.name : props.name}   
   </Layout>
 )
 
